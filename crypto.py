@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#zv#
 import os
 import threading
 

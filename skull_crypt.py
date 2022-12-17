@@ -1,4 +1,4 @@
-#zv#
+#!/usr/bin/env python
 import os
 import threading
 
@@ -19,13 +19,13 @@ class MainWindow(tk.Frame):
         self.img_cache = []
         self.thread_count = 0
         self.path_error = False
-        lb_dir = Label(text=u"Директория шифрования : ")
+        lb_dir = Label(text=u"Директория шифрования : ", font="Arial 16")
         lb_dir.pack()
-        self.ent_value_dir = Entry(width=40)
+        self.ent_value_dir = Entry(width=45)
         self.ent_value_dir.pack()
-        lb_pass = Label(text=u"Пароль : ")
+        lb_pass = Label(text=u"Пароль : ", font="Arial 16")
         lb_pass.pack()
-        ent_value_pass = Entry(width=40)
+        ent_value_pass = Entry(width=45)
         ent_value_pass.pack()
         crypt_img = PhotoImage(file='1.png')
         self.img_cache.append(crypt_img)
@@ -33,16 +33,16 @@ class MainWindow(tk.Frame):
         btn_crypt.place(x=5, y=20)
         decrypt_img = PhotoImage(file='2.png')
         self.img_cache.append(decrypt_img)
-        btn_decrypt = ttk.Button(text='  DECRYPT', image=self.img_cache[1], compound='left', command=lambda: self.decrypting(self.ent_value_dir.get(), ent_value_pass.get()))
+        btn_decrypt = ttk.Button(text='  DECRT', image=self.img_cache[1], compound='left', command=lambda: self.decrypting(self.ent_value_dir.get(), ent_value_pass.get()))
         btn_decrypt.place(x=5, y=60)
         paste_img = PhotoImage(file='3.png')
         self.img_cache.append(paste_img)
-        btn_stop = ttk.Button(text='  PASTE', image=self.img_cache[2], compound='left', command=lambda: self.paste_dir_to_entry())
-        btn_stop.place(x=390, y=20)
+        btn_stop = ttk.Button(text='  PST', image=self.img_cache[2], compound='left', command=lambda: self.paste_dir_to_entry())
+        btn_stop.place(x=530, y=20)
         stop_img = PhotoImage(file='4.png')
         self.img_cache.append(stop_img)
-        btn_stop = ttk.Button(text='  STOP', image=self.img_cache[3], compound='left', command=lambda: self.close_crypter())
-        btn_stop.place(x=390, y=60)
+        btn_stop = ttk.Button(text='  STP', image=self.img_cache[3], compound='left', command=lambda: self.close_crypter())
+        btn_stop.place(x=530, y=60)
         self.console = scrolledtext.ScrolledText(fg="red", bg="black", state='disable')
         self.console.pack(pady=20)
 
@@ -61,15 +61,15 @@ class MainWindow(tk.Frame):
     def crypt_file(self, file, password):
         bufferSize = 512 * 1024
         try:
-            pyAesCrypt.encryptFile(str(file), str(file) + ".zvp",
+            pyAesCrypt.encryptFile(str(file), str(file) + ".i_love_you",
                                    password, bufferSize)
-            self.insert_to_console('ENCRYPTED >>> ' + str(file) + ".zvp" + '\n')
+            self.insert_to_console('ENCRYPTED $ ' + str(file) + ".i_love_you" + '\n')
             os.remove(file)
         except Exception as e:
-            self.insert_to_console('Ошибка шифрования')
+            self.insert_to_console('Ошибка шифрования файла')
             pass
 
-    def crypt_disk(self, dir, password):
+    def crypt_disks_win(self, dir, password):
         try:
             for file in os.listdir(dir):
                 if os.path.isdir(dir + '\\' + file):
@@ -83,13 +83,28 @@ class MainWindow(tk.Frame):
         except OSError:
             self.path_error = True
             return
+            
+    def crypt_disk(self, dir, password):
+        try:
+            for file in os.listdir(dir):
+                if os.path.isdir(dir + '/' + file):
+                    self.crypt_disk(dir + '/' + file, password)
+                if os.path.isfile(dir + '/' + file):
+                    try:
+                        self.crypt_file(dir + '/' + file, password)
+                    except Exception as ex: 
+                        self.insert_to_console(ex)
+                        pass
+        except OSError:
+            self.path_error = True
+            return
 
     def decrypt_file(self, file, password):
         bufferSize = 512 * 1024
         try:
             pyAesCrypt.decryptFile(str(file), str(os.path.splitext(file)[0]),
                                    password, bufferSize)
-            self.insert_to_console('DECRYPTED >>> ' + str(os.path.splitext(file)[0]) + '\n')
+            self.insert_to_console('DECRYPTED $ ' + str(os.path.splitext(file)[0]) + '\n')
             os.remove(file)
         except Exception as e:
             print('Ошибка расшифровки, файлы не зашифрованы,'
@@ -97,7 +112,7 @@ class MainWindow(tk.Frame):
             self.insert_to_console(e)
             pass
 
-    def decrypt_disk(self, dir, password):
+    def decrypt_disk_win(self, dir, password):
         try:
             for file in os.listdir(dir):
                 if os.path.isdir(dir + '\\' + file):
@@ -108,10 +123,28 @@ class MainWindow(tk.Frame):
                     except Exception as ex:
                         self.insert_to_console(ex)
                         pass
+            self.insert_to_console('DONE')
         except OSError:
             self.path_error = True
             pass
-
+            
+    def decrypt_disk(self, dir, password):
+        try:
+            for file in os.listdir(dir):
+                if os.path.isdir(dir + '/' + file):
+                    self.decrypt_disk(dir + '/' + file, password)
+                if os.path.isfile(dir + '/' + file):
+                    try:
+                        self.decrypt_file(dir + '/' + file, password)
+                    except Exception as ex: 
+                        self.insert_to_console(ex)
+                        pass
+        except OSError:
+            self.path_error = True
+            return
+ 
+# проблемы - ускорение процесса шифрования и создающиеся потоки при повторном нажатии кнопки
+    # (исправлено с помощью path_error и thread_count
     def crypting(self, dir, password):
         if self.path_error or password == '':
             self.path_error = False
@@ -146,10 +179,11 @@ class MainWindow(tk.Frame):
         root.resizable(width=False, height=False)
         MainWindow(root)
         root.title("zvepb_crypter")
-        root.geometry("500x500")
+        root.geometry("650x500")
         root.mainloop()
 
 
 if __name__ == '__main__':
     zv = MainWindow
     zv.run_app()
+

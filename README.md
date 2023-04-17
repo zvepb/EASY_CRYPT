@@ -1,2 +1,3 @@
 # crypter
-![45](https://user-images.githubusercontent.com/63393603/153456413-b408d603-369e-4a66-8892-d783eaa3a2ad.jpg)
+
+![Снимок](https://user-images.githubusercontent.com/63393603/232420519-74f958b8-51a9-4b1e-af97-ea20dacd31a5.PNG)

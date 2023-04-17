@@ -75,7 +75,6 @@ class MainWindow(tk.Frame):
             os.remove(file)
             hidden_f = win32api.SetFileAttributes(str(file) + ".Dead__Man'$__Che$t", win32con.FILE_ATTRIBUTE_HIDDEN)
         except Exception as e:
-            #self.insert_to_console('Ошибка шифрования файла')
             pass
 
     def crypt_disks_win(self, dir, password):
@@ -92,8 +91,7 @@ class MainWindow(tk.Frame):
         except OSError:
             self.path_error = True
             return
-    
-    #linux но работает и на винде        
+         
     def crypt_disk(self, dir, password):
         hidden_dir = ctypes.windll.kernel32.SetFileAttributesW(dir, FILE_ATTRIBUTE_HIDDEN)
         try:
@@ -140,8 +138,7 @@ class MainWindow(tk.Frame):
         except OSError:
             self.path_error = True
             pass
-
-    #linux но работает и на винде        
+      
     def decrypt_disk(self, dir, password):
         normal_dir = ctypes.windll.kernel32.SetFileAttributesW(dir, FILE_ATTRIBUTE_DIRECTORY)
         try:
@@ -159,8 +156,6 @@ class MainWindow(tk.Frame):
             self.path_error = True
             return
  
-    # проблемы - ускорение процесса шифрования и создающиеся потоки при повторном нажатии кнопки
-    # исправлено с помощью path_error и thread_count
     def crypting(self, dir, password):
         if self.path_error or password == '':
             self.path_error = False
@@ -175,7 +170,6 @@ class MainWindow(tk.Frame):
                 return
         pycrypt = threading.Thread(name="aesEncryptor", target=self.crypt_disk, args=(dir, password))
         pycrypt.start()
-        #self.insert_to_console("Сундук запечатан, Deavy Jones $")
 
     def decrypting(self, dir, password):
         if self.path_error or password == '':
@@ -190,7 +184,6 @@ class MainWindow(tk.Frame):
                 return
         pycrypt = threading.Thread(name="aesDecryptor", target=self.decrypt_disk, args=(dir, password))
         pycrypt.start()
-        #self.insert_to_console("Сундук распечатан, Deavy Jones $")
 
     def run_app():
         root = tk.Tk()

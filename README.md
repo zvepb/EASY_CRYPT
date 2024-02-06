@@ -1,4 +1,4 @@
-Install all lib and download files. 
+Download all file and install all lib with pip. 
 
 pyinstaller --onefile
 
